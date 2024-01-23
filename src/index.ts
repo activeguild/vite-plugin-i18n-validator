@@ -7,7 +7,8 @@ type Option = {
   baseLocaleFilePath: string;
   include?: string | RegExp | Array<string | RegExp>;
   exclude?: string | RegExp | Array<string | RegExp>;
-  prohibitedWords?: string[];
+  prohibitedKeys?: string[];
+  prohibitedValues?: string[];
 };
 
 type CacheValue = [[string], [Cache]];
@@ -25,14 +26,21 @@ export default function Plugin(option: Option): VitePlugin {
   const checkNestedProperty = (
     obj: any,
     propertyPath: string
-  ): { notFound?: boolean; noValue?: boolean; prohibited?: boolean } | true => {
+  ):
+    | {
+        notFound?: boolean;
+        noValue?: boolean;
+        prohibitedKey?: boolean;
+        prohibitedValue?: boolean;
+      }
+    | true => {
     const properties = propertyPath.split(".");
 
     for (let i = 0; i < properties.length; i++) {
       const prop = properties[i];
 
-      if (option.prohibitedWords && option.prohibitedWords.includes(prop)) {
-        return { prohibited: true };
+      if (option.prohibitedKeys && option.prohibitedKeys.includes(prop)) {
+        return { prohibitedKey: true };
       }
       if (!obj.hasOwnProperty(prop)) {
         return { notFound: true };
@@ -40,10 +48,10 @@ export default function Plugin(option: Option): VitePlugin {
         obj = obj[prop];
         if (!obj) {
           return { noValue: true };
-        } else if (typeof obj === "string" && option.prohibitedWords) {
-          for (let j = 0; j < option.prohibitedWords.length; j++) {
-            if (obj.includes(option.prohibitedWords[j])) {
-              return { prohibited: true };
+        } else if (typeof obj === "string" && option.prohibitedValues) {
+          for (let j = 0; j < option.prohibitedValues.length; j++) {
+            if (obj.includes(option.prohibitedValues[j])) {
+              return { prohibitedValue: true };
             }
           }
         }
