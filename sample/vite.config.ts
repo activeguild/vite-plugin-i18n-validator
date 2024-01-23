@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import i18nValidator from "vite-plugin-i18n-varidator";
+import i18nValidator from "vite-plugin-i18n-validator";
 import path from "path";
 import inspect from "vite-plugin-inspect";
 

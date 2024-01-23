@@ -1,10 +1,10 @@
-<h1 align="center">vite-plugin-i18n-varidator ⚡ Welcome 🐷</h1>
+<h1 align="center">vite-plugin-i18n-validator ⚡ Welcome 🐷</h1>
 
 <p align="left">
-  <a href="https://github.com/actions/setup-node"><img alt="GitHub Actions status" src="https://github.com/activeguild/vite-plugin-i18n-varidator/workflows/release/badge.svg" style="max-width:100%;"></a>
+  <a href="https://github.com/actions/setup-node"><img alt="GitHub Actions status" src="https://github.com/activeguild/vite-plugin-i18n-validator/workflows/release/badge.svg" style="max-width:100%;"></a>
 </p>
 
-# vite-plugin-i18n-varidator
+# vite-plugin-i18n-validator
 
 A plugin validates keys and values in Json files in localization.\
 It can also detect unset keys between specific languages.
@@ -12,7 +12,7 @@ It can also detect unset keys between specific languages.
 ## Install
 
 ```bash
-npm i -D vite-plugin-i18n-varidator
+npm i -D vite-plugin-i18n-validator
 ```
 
 ## Options
@@ -30,7 +30,7 @@ npm i -D vite-plugin-i18n-varidator
 
 ```ts
 import { defineConfig } from "vite";
-import i18nValidator from "vite-plugin-i18n-varidator";
+import i18nValidator from "vite-plugin-i18n-validator";
 import path from "path";
 
 // https://vitejs.dev/config/
@@ -53,8 +53,8 @@ npm run build
 
 ## Principles of conduct
 
-Please see [the principles of conduct](https://github.com/activeguild/vite-plugin-i18n-varidator/blob/master/.github/CONTRIBUTING.md) when building a site.
+Please see [the principles of conduct](https://github.com/activeguild/vite-plugin-i18n-validator/blob/master/.github/CONTRIBUTING.md) when building a site.
 
 ## License
 
-This library is licensed under the [MIT license](https://github.com/activeguild/vite-plugin-i18n-varidator/blob/master/LICENSE).
+This library is licensed under the [MIT license](https://github.com/activeguild/vite-plugin-i18n-validator/blob/master/LICENSE).

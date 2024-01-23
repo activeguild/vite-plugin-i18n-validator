@@ -1,5 +1,5 @@
 {
-  "name": "vite-plugin-i18n-varidator",
+  "name": "vite-plugin-i18n-validator",
   "version": "0.1.0",
   "description": "A plugin validates keys and values in Json files in localization.",
   "type": "module",
