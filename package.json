@@ -14,7 +14,7 @@
     }
   },
   "scripts": {
-    "build": "tsup-node src/index.ts --format esm,cjs --dts --clean",
+    "build": "tsup-node",
     "watch": "pnpm run build - --watch",
     "prepare": "husky install"
   },

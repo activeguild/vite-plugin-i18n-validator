@@ -1,9 +1,12 @@
 import { createFilter } from "vite";
 import { Plugin as VitePlugin } from "vite";
-import fs, { readFileSync } from "fs";
+import fs, { readFileSync } from "node:fs";
 import pc from "picocolors";
+import { Worker } from "worker_threads";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-type Option = {
+export type Option = {
   baseLocaleFilePath: string;
   include?: string | RegExp | Array<string | RegExp>;
   exclude?: string | RegExp | Array<string | RegExp>;
@@ -17,49 +20,12 @@ type Cache = [[string] | [CacheValue]];
 export default function Plugin(option: Option): VitePlugin {
   let cachedBaseLocale: string[] | null = null;
   let checkedFiles: string[] = [];
+  let worker: Worker | null = null;
   const filter = createFilter(option.include, option.exclude);
 
   if (!option.baseLocaleFilePath) {
     throw new Error("baseLocaleFilePath is required.");
   }
-
-  const checkNestedProperty = (
-    obj: any,
-    propertyPath: string
-  ):
-    | {
-        notFound?: boolean;
-        noValue?: boolean;
-        prohibitedKey?: boolean;
-        prohibitedValue?: boolean;
-      }
-    | true => {
-    const properties = propertyPath.split(".");
-
-    for (let i = 0; i < properties.length; i++) {
-      const prop = properties[i];
-
-      if (option.prohibitedKeys && option.prohibitedKeys.includes(prop)) {
-        return { prohibitedKey: true };
-      }
-      if (!obj.hasOwnProperty(prop)) {
-        return { notFound: true };
-      } else {
-        obj = obj[prop];
-        if (!obj) {
-          return { noValue: true };
-        } else if (typeof obj === "string" && option.prohibitedValues) {
-          for (let j = 0; j < option.prohibitedValues.length; j++) {
-            if (obj.includes(option.prohibitedValues[j])) {
-              return { prohibitedValue: true };
-            }
-          }
-        }
-      }
-    }
-
-    return true;
-  };
 
   const traverse = (json: Record<string, any>, parentKey: string): string[] => {
     const keys = Object.keys(json);
@@ -85,28 +51,6 @@ export default function Plugin(option: Option): VitePlugin {
     }
 
     return arr;
-  };
-
-  const compareWithBaseFile = (json: any, cachedBaseLocale: string[]) => {
-    let errors: string[] = [];
-    for (let i = 0; i < cachedBaseLocale.length; i++) {
-      const result = checkNestedProperty(json, cachedBaseLocale[i]);
-      if (result === true) {
-        continue;
-      }
-
-      if (result.notFound) {
-        errors.push(`"${cachedBaseLocale[i]}" is not found.`);
-      } else if (result.noValue) {
-        errors.push(`"${cachedBaseLocale[i]}" has no value.`);
-      } else if (result.prohibitedKey) {
-        errors.push(`"${cachedBaseLocale[i]}" is prohibited key.`);
-      } else if (result.prohibitedValue) {
-        errors.push(`"${cachedBaseLocale[i]}" has prohibited value.`);
-      }
-    }
-
-    return errors;
   };
 
   try {
@@ -142,20 +86,37 @@ export default function Plugin(option: Option): VitePlugin {
           return;
         }
 
-        const errors = compareWithBaseFile(json, cachedBaseLocale);
-
-        if (errors.length > 0) {
-          console.log(pc.yellow(`\n${context.file}`));
-          for (let i = 0; i < errors.length; i++) {
-            console.error(`- ${errors[i]}`);
-          }
-        }
+        worker?.postMessage({
+          json,
+          cachedBaseLocale,
+          option,
+          id: context.file,
+        });
       } catch (error) {
         console.error("error :>> ", error);
       }
     },
+    configResolved() {
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      worker = new Worker(`${__dirname}/worker.js`);
+
+      worker.on("message", ({ errors, id }) => {
+        if (errors.length > 0) {
+          console.log(pc.yellow(`\n${id}`));
+          for (let i = 0; i < errors.length; i++) {
+            console.error(`- ${errors[i]}`);
+          }
+        }
+      });
+    },
     buildStart() {
       checkedFiles = [];
+    },
+    buildEnd() {
+      if (worker) {
+        worker.terminate();
+      }
     },
     transform(_code, id) {
       if (!cachedBaseLocale) {
@@ -173,16 +134,7 @@ export default function Plugin(option: Option): VitePlugin {
       try {
         const fileText = readFileSync(id, "utf-8");
         const json = JSON.parse(fileText);
-
-        const errors = compareWithBaseFile(json, cachedBaseLocale);
-
-        if (errors.length > 0) {
-          console.log(pc.yellow(`\n${id}`));
-          for (let i = 0; i < errors.length; i++) {
-            console.error(`- ${errors[i]}`);
-          }
-        }
-
+        worker?.postMessage({ json, cachedBaseLocale, option, id });
         checkedFiles.push(id);
       } catch (error) {
         console.error("error :>> ", error);
