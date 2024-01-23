@@ -16,6 +16,5 @@ parentPort?.on(
       msg.option
     );
     parentPort?.postMessage({ errors, id: msg.id });
-    process.exit();
   }
 );
