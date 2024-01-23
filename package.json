@@ -20,6 +20,10 @@
   },
   "author": "j1ngzoue",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/activeguild/vite-plugin-i18n-validator/issues"
+  },
+  "homepage": "https://github.com/activeguild/vite-plugin-i18n-validator#readme",
   "dependencies": {
     "picocolors": "^1.0.0"
   },

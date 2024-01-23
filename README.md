@@ -45,11 +45,15 @@ export default defineConfig({
 });
 ```
 
+- Compare files in `baseLocaleFilePath` when files set to `include` are saved.
 ```bash
 npm run dev
-or
-npm run build
 ```
+
+- Compare all files set in `include` with those in `baseLocaleFilePath`.
+```base
+npm run build
+``````
 
 ## Principles of conduct
 
