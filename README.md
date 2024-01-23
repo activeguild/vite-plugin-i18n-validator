@@ -17,12 +17,12 @@ npm i -D vite-plugin-i18n-varidator
 
 ## Options
 
-| Parameter             | Type                                   | Description                                                                                                                                                                                                                                                                                                                                                           |
-| --------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| baseLocaleFilePath           | string                               |Set the path of the file to be compared |
-| include      | string \| RegExp \| Array<string \| RegExp>| Set the target path.|
-| exclude | string \| RegExp \| Array<string \| RegExp>                             |  Set the paths you want to exclude.   |
-| prohibitedWords  | string[]       |Set prohibited words
+| Parameter          | Type                                        | Description                              |
+| ------------------ | ------------------------------------------- | ---------------------------------------- |
+| baseLocaleFilePath | string                                      | Set the path of the file to be compared. |
+| include            | string \| RegExp \| Array<string \| RegExp> | Set the target path.                     |
+| exclude            | string \| RegExp \| Array<string \| RegExp> | Set the paths you want to exclude.       |
+| prohibitedWords    | string[]                                    | Set prohibited words.                    |
 
 ## Usage
 
