@@ -1,6 +1,7 @@
 {
   "foo": {
     "bar": "bar",
-    "zoo": "zoo"
+    "zoo": "zoo",
+    "db": "public"
   }
 }
