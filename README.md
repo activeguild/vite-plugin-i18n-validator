@@ -1,7 +1,7 @@
 <h1 align="center">vite-plugin-i18n-varidator ⚡ Welcome 🐷</h1>
 
 <p align="left">
-  <a href="https://github.com/actions/setup-node"><img alt="GitHub Actions status" src="https://github.com/activeguild/vite-plugin-i18n-varidator/workflows/automatic%20release/badge.svg" style="max-width:100%;"></a>
+  <a href="https://github.com/actions/setup-node"><img alt="GitHub Actions status" src="https://github.com/activeguild/vite-plugin-i18n-varidator/workflows/release/badge.svg" style="max-width:100%;"></a>
 </p>
 
 # vite-plugin-i18n-varidator
