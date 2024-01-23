@@ -99,8 +99,10 @@ export default function Plugin(option: Option): VitePlugin {
         errors.push(`"${cachedBaseLocale[i]}" is not found.`);
       } else if (result.noValue) {
         errors.push(`"${cachedBaseLocale[i]}" has no value.`);
-      } else if (result.prohibited) {
-        errors.push(`"${cachedBaseLocale[i]}" is prohibited.`);
+      } else if (result.prohibitedKey) {
+        errors.push(`"${cachedBaseLocale[i]}" is prohibited key.`);
+      } else if (result.prohibitedValue) {
+        errors.push(`"${cachedBaseLocale[i]}" has prohibited value.`);
       }
     }
 

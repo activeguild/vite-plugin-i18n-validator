@@ -22,7 +22,8 @@ npm i -D vite-plugin-i18n-validator
 | baseLocaleFilePath | string                                      | Set the path of the file to be compared. |
 | include            | string \| RegExp \| Array<string \| RegExp> | Set the target path.                     |
 | exclude            | string \| RegExp \| Array<string \| RegExp> | Set the paths you want to exclude.       |
-| prohibitedWords    | string[]                                    | Set prohibited words.                    |
+| prohibitedKeys     | string[]                                    | Set prohibited keys.                     |
+| prohibitedValues   | string[]                                    | Set prohibited values.                   |
 
 ## Usage
 
@@ -46,14 +47,16 @@ export default defineConfig({
 ```
 
 - Compare files in `baseLocaleFilePath` when files set to `include` are saved.
+
 ```bash
 npm run dev
 ```
 
 - Compare all files set in `include` with those in `baseLocaleFilePath`.
+
 ```base
 npm run build
-``````
+```
 
 ## Principles of conduct
 

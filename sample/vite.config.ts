@@ -12,7 +12,7 @@ export default defineConfig({
     i18nValidator({
       include: ["src/locales/*.json"],
       baseLocaleFilePath: path.resolve(__dirname, "src/locales/ja.json"),
-      prohibitedWords: ["public"],
+      prohibitedValues: ["public"],
     }),
   ],
 });
