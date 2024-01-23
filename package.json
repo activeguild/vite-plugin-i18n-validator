@@ -1,0 +1,52 @@
+{
+  "name": "vite-plugin-i18n-varidator",
+  "version": "0.1.0",
+  "description": "A plugin validates keys and values in Json files in localization.",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup-node src/index.ts --format esm,cjs --dts --clean",
+    "watch": "pnpm run build - --watch",
+    "prepare": "husky install"
+  },
+  "author": "j1ngzoue",
+  "license": "MIT",
+  "dependencies": {
+    "picocolors": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/prettier": "^3.0.0",
+    "@types/traverse": "^0.6.36",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.2.4",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12"
+  },
+  "keywords": [
+    "vite",
+    "vite-plugin",
+    "json",
+    "validator",
+    "i18n",
+    "Internationalization"
+  ],
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  }
+}
