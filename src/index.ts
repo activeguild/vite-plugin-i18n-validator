@@ -5,6 +5,7 @@ import pc from "picocolors";
 import { Worker } from "worker_threads";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import type { CreateLinterOptions, LoadTextlintrcOptions } from "textlint";
 
 export type Option = {
   baseLocaleFilePath: string;
@@ -12,15 +13,21 @@ export type Option = {
   exclude?: string | RegExp | Array<string | RegExp>;
   prohibitedKeys?: string[];
   prohibitedValues?: string[];
+  textlint?: {
+    createLinterOptions: Exclude<CreateLinterOptions, "descriptor">;
+    loadTextlintrcOptions: LoadTextlintrcOptions;
+  };
 };
 
 type CacheValue = [[string], [Cache]];
 type Cache = [[string] | [CacheValue]];
 
-export default function Plugin(option: Option): VitePlugin {
+export default async function Plugin(option: Option): Promise<VitePlugin> {
   let cachedBaseLocale: string[] | null = null;
   let checkedFiles: string[] = [];
   let worker: Worker | null = null;
+  let textlintWorker: Worker | null = null;
+
   const filter = createFilter(option.include, option.exclude);
 
   if (!option.baseLocaleFilePath) {
@@ -92,6 +99,10 @@ export default function Plugin(option: Option): VitePlugin {
           option,
           id: context.file,
         });
+        textlintWorker?.postMessage({
+          textlintOptions: option.textlint,
+          id: context.file,
+        });
       } catch (error) {
         console.error("error :>> ", error);
       }
@@ -109,14 +120,19 @@ export default function Plugin(option: Option): VitePlugin {
           }
         }
       });
+
+      if (option.textlint) {
+        textlintWorker = new Worker(`${__dirname}/textlintWorker.js`);
+        textlintWorker.on("message", ({ id }) => {});
+        return;
+      }
     },
     buildStart() {
       checkedFiles = [];
     },
     buildEnd() {
-      if (worker) {
-        worker.terminate();
-      }
+      worker?.terminate();
+      textlintWorker?.terminate();
     },
     transform(_code, id) {
       if (!cachedBaseLocale) {

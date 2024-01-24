@@ -13,6 +13,11 @@ export default defineConfig({
       include: ["src/locales/*.json"],
       baseLocaleFilePath: path.resolve(__dirname, "src/locales/ja.json"),
       prohibitedValues: ["public"],
+      textlint: {
+        loadTextlintrcOptions: {
+          configFilePath: path.resolve(__dirname, ".textlintrc.json"),
+        },
+      },
     }),
   ],
 });
