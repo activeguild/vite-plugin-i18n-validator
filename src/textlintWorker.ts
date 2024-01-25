@@ -9,10 +9,6 @@ parentPort?.on(
   async (msg: { textlintOptions: Option["textlint"]; id: string }) => {
     if (!textlint) {
       const { createLinter, loadTextlintrc } = await import("textlint");
-      console.log(
-        " msg.textlintOptions!.loadTextlintrcOptions :>> ",
-        msg.textlintOptions!.loadTextlintrcOptions
-      );
       const descriptor = await loadTextlintrc(
         msg.textlintOptions!.loadTextlintrcOptions
       );
@@ -23,10 +19,8 @@ parentPort?.on(
       });
     }
 
-    console.log("msg.id :>> ", msg.id);
-    const test = await textlint.lintFiles([msg.id]);
-    console.log("test :>> ", test);
+    const result = await textlint.lintFiles([msg.id]);
 
-    parentPort?.postMessage({ id: msg.id });
+    parentPort?.postMessage({ result, id: msg.id });
   }
 );
