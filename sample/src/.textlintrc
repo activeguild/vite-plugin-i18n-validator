@@ -1,0 +1,8 @@
+{
+  "plugins": [
+    "json"
+  ],
+  "rules": {
+    "no-todo": true
+  }
+}

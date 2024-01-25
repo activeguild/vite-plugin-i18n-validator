@@ -151,6 +151,10 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
         const fileText = readFileSync(id, "utf-8");
         const json = JSON.parse(fileText);
         worker?.postMessage({ json, cachedBaseLocale, option, id });
+        textlintWorker?.postMessage({
+          textlintOptions: option.textlint,
+          id,
+        });
         checkedFiles.push(id);
       } catch (error) {
         console.error("error :>> ", error);

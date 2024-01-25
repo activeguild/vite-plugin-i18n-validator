@@ -15,7 +15,8 @@ export default defineConfig({
       prohibitedValues: ["public"],
       textlint: {
         loadTextlintrcOptions: {
-          configFilePath: path.resolve(__dirname, ".textlintrc.json"),
+          configFilePath: path.resolve(__dirname, "src/.textlintrc"),
+          node_modulesDir: path.resolve(__dirname, "./node_modules"),
         },
       },
     }),
