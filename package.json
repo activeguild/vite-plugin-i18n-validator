@@ -55,5 +55,17 @@
   ],
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
+  },
+  "peerDependencies": {
+    "textlint": "*",
+    "textlint-plugin-json": "*"
+  },
+  "peerDependenciesMeta": {
+    "textlint": {
+      "optional": true
+    },
+    "textlint-plugin-json": {
+      "optional": true
+    }
   }
 }
