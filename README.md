@@ -62,6 +62,17 @@ npm run dev
 npm run build
 ```
 
+- When a file is updated or built, the following messages are output.
+
+```bash
+2:05:34 [vite] src/locales/ja.json:5:14: Found TODO: 'todo:hoge"'
+2:05:34 [vite] src/locales/ja.json:7:15: Found TODO: 'todo:hoge"'
+2:05:49 [vite] src/locales/en.json: Not found: 'foo.zoo'
+2:05:49 [vite] src/locales/en.json: Not found: 'foo.todo'
+2:05:49 [vite] src/locales/en.json: Not found: 'foo.todo2'
+2:05:49 [vite] src/locales/en.json: Not found: 'foo.todo3'
+```
+
 - If you want to use `textlint`, you need to add `textlint` and `textlint-plugin-json` and add the following settings to `.textlintrc`.
 
 ```

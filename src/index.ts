@@ -1,4 +1,4 @@
-import { createFilter } from "vite";
+import { Logger, createFilter } from "vite";
 import { Plugin as VitePlugin } from "vite";
 import fs, { readFileSync } from "node:fs";
 import pc from "picocolors";
@@ -13,6 +13,7 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
   let worker: Worker | null = null;
   let textlintWorker: Worker | null = null;
   let textlintOption: TextlintOption | null = null;
+  let logger: Logger | null = null;
 
   const filter = createFilter(option.include, option.exclude);
 
@@ -62,29 +63,36 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
     configResolved(config) {
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = path.dirname(__filename);
+      logger = config.logger;
       worker = new Worker(`${__dirname}/worker.js`);
       worker.on("message", ({ errors, file }) => {
         if (errors.length > 0) {
           const relativePath = path.relative(config.root, file);
-          console.log(pc.yellow(`\n${relativePath}`));
           for (let i = 0; i < errors.length; i++) {
-            console.error(`${errors[i]}`);
+            logger?.info(`${pc.yellow(`${relativePath}`)}: ${errors[i]}`, {
+              timestamp: true,
+            });
           }
         }
       });
 
       if (option.textlint) {
+        const textlintConfigFilepath = `${config.root}/.textlintrc`;
+        const nodeModulesDir = `${config.root}/node_modules`;
+
         if (option.textlint === true) {
           textlintOption = {
             createLinterOptions: {},
             loadTextlintrcOptions: {
-              configFilePath: `${config.root}/.textlintrc`,
-              node_modulesDir: `${config.root}/node_modules`,
+              configFilePath: textlintConfigFilepath,
+              node_modulesDir: nodeModulesDir,
             },
           };
         } else if (!option.textlint.loadTextlintrcOptions.configFilePath) {
-          option.textlint.loadTextlintrcOptions.configFilePath = `${config.root}/.textlintrc`;
-          option.textlint.loadTextlintrcOptions.node_modulesDir = `${config.root}/node_modules`;
+          option.textlint.loadTextlintrcOptions.configFilePath =
+            textlintConfigFilepath;
+          option.textlint.loadTextlintrcOptions.node_modulesDir =
+            nodeModulesDir;
           textlintOption = {
             ...option.textlint,
           };
@@ -101,11 +109,11 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
               continue;
             }
             const relativePath = path.relative(config.root, result.filePath);
-            console.log(pc.yellow(`\n${relativePath}`));
             for (let j = 0; j < result.messages.length; j++) {
               const message = result.messages[j];
-              console.error(
-                `${message.loc.start.line}:${message.loc.start.column}: ${message.message}`
+              logger?.info(
+                `${pc.yellow(`${relativePath}`)}:${message.loc.start.line}:${message.loc.start.column}: ${message.message}`,
+                { timestamp: true }
               );
             }
           }
@@ -146,7 +154,7 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
           file: context.file,
         });
       } catch (error) {
-        console.error("error :>> ", error);
+        throw error;
       }
     },
     buildStart() {
@@ -180,7 +188,7 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
 
         checkedFiles.push(id);
       } catch (error) {
-        console.error("error :>> ", error);
+        throw error;
       }
     },
   };

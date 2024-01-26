@@ -13,13 +13,13 @@ export const compareWithBaseFile = (
     }
 
     if (result.notFound) {
-      errors.push(`"${cachedBaseLocale[i]}" is not found.`);
+      errors.push(`Not found: '${cachedBaseLocale[i]}'`);
     } else if (result.noValue) {
-      errors.push(`"${cachedBaseLocale[i]}" has no value.`);
+      errors.push(`No value: '${cachedBaseLocale[i]}'`);
     } else if (result.prohibitedKey) {
-      errors.push(`"${cachedBaseLocale[i]}" is prohibited key.`);
+      errors.push(`Prohibited key: '${cachedBaseLocale[i]}'`);
     } else if (result.prohibitedValue) {
-      errors.push(`"${cachedBaseLocale[i]}" has prohibited value.`);
+      errors.push(`Prohibited value: '${cachedBaseLocale[i]}'`);
     }
   }
 
