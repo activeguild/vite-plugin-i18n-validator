@@ -1,4 +1,4 @@
-import { Option } from "./index";
+import { Option } from "./types";
 
 export const compareWithBaseFile = (
   json: any,
