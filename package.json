@@ -48,8 +48,10 @@
     "vite-plugin",
     "json",
     "validator",
+    "valid",
     "i18n",
-    "Internationalization"
+    "Internationalization",
+    "textlint"
   ],
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
