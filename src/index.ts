@@ -95,7 +95,6 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
       }
     },
     configResolved(config) {
-      console.log("config :>> ", config);
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = path.dirname(__filename);
       worker = new Worker(`${__dirname}/worker.js`);
