@@ -14,8 +14,10 @@
     }
   },
   "scripts": {
-    "build": "tsup-node",
-    "watch": "pnpm run build - --watch",
+    "tsup": "tsup-node",
+    "build": "turbo run tsup",
+    "watch": "turbo run tsup -- --watch",
+    "local:publish": "turbo run tsup && npm link",
     "prepare": "husky install"
   },
   "author": "j1ngzoue",
@@ -40,6 +42,7 @@
     "prettier": "^3.2.4",
     "textlint": "^13.4.1",
     "tsup": "^8.0.1",
+    "turbo": "^1.11.3",
     "typescript": "^5.3.3",
     "vite": "^5.0.12"
   },
@@ -58,7 +61,8 @@
   },
   "peerDependencies": {
     "textlint": "*",
-    "textlint-plugin-json": "*"
+    "textlint-plugin-json": "*",
+    "vite": ">=4"
   },
   "peerDependenciesMeta": {
     "textlint": {

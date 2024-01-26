@@ -6,3 +6,5 @@ eslint.config.js
 tsconfig.json
 .husky
 tsup.config.ts
+turbo.json
+.turbo
