@@ -79,10 +79,12 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
             createLinterOptions: {},
             loadTextlintrcOptions: {
               configFilePath: `${config.root}/.textlintrc`,
+              node_modulesDir: `${config.root}/node_modules`,
             },
           };
         } else if (!option.textlint.loadTextlintrcOptions.configFilePath) {
           option.textlint.loadTextlintrcOptions.configFilePath = `${config.root}/.textlintrc`;
+          option.textlint.loadTextlintrcOptions.node_modulesDir = `${config.root}/node_modules`;
           textlintOption = {
             ...option.textlint,
           };
