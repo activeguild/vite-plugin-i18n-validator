@@ -61,6 +61,16 @@ npm run dev
 npm run build
 ```
 
+- If you want to use `textlint`, you need to add `textlint` and `textlint-plugin-json` and add the following settings to `.textlintrc`.
+
+```
+{
+  "plugins": [
+    "json".
+  ],.
+}
+```
+
 ## Principles of conduct
 
 Please see [the principles of conduct](https://github.com/activeguild/vite-plugin-i18n-validator/blob/master/.github/CONTRIBUTING.md) when building a site.
