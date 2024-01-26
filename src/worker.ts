@@ -8,13 +8,11 @@ parentPort?.on(
     json: any;
     cachedBaseLocale: string[];
     option: Option;
-    id: string;
+    file: string;
   }) => {
-    const errors = compareWithBaseFile(
-      msg.json,
-      msg.cachedBaseLocale,
-      msg.option
-    );
-    parentPort?.postMessage({ errors, id: msg.id });
+    const { json, cachedBaseLocale, option, file } = msg;
+
+    const errors = compareWithBaseFile(json, cachedBaseLocale, option);
+    parentPort?.postMessage({ errors, file });
   }
 );

@@ -58,49 +58,14 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
   return {
     name: "vite-plugin-i18n-validator",
     enforce: "pre",
-    async handleHotUpdate(context) {
-      if (!cachedBaseLocale) {
-        return;
-      }
 
-      if (!filter(context.file)) {
-        return;
-      }
-
-      const text = await context.read();
-
-      try {
-        const json = JSON.parse(text);
-
-        if (context.file === option.baseLocaleFilePath) {
-          cachedBaseLocale = traverse(json, "");
-        }
-
-        if (!cachedBaseLocale) {
-          return;
-        }
-
-        worker?.postMessage({
-          json,
-          cachedBaseLocale,
-          option,
-          id: context.file,
-        });
-        textlintWorker?.postMessage({
-          textlintOption,
-          id: context.file,
-        });
-      } catch (error) {
-        console.error("error :>> ", error);
-      }
-    },
     configResolved(config) {
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = path.dirname(__filename);
       worker = new Worker(`${__dirname}/worker.js`);
-      worker.on("message", ({ errors, id }) => {
+      worker.on("message", ({ errors, file }) => {
         if (errors.length > 0) {
-          const relativePath = path.relative(config.root, id);
+          const relativePath = path.relative(config.root, file);
           console.log(pc.yellow(`\n${relativePath}`));
           for (let i = 0; i < errors.length; i++) {
             console.error(`${errors[i]}`);
@@ -146,6 +111,42 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
         return;
       }
     },
+    async handleHotUpdate(context) {
+      if (!cachedBaseLocale) {
+        return;
+      }
+
+      if (!filter(context.file)) {
+        return;
+      }
+
+      const text = await context.read();
+
+      try {
+        const json = JSON.parse(text);
+
+        if (context.file === option.baseLocaleFilePath) {
+          cachedBaseLocale = traverse(json, "");
+        }
+
+        if (!cachedBaseLocale) {
+          return;
+        }
+
+        worker?.postMessage({
+          json,
+          cachedBaseLocale,
+          option,
+          file: context.file,
+        });
+        textlintWorker?.postMessage({
+          textlintOption,
+          file: context.file,
+        });
+      } catch (error) {
+        console.error("error :>> ", error);
+      }
+    },
     buildStart() {
       checkedFiles = [];
     },
@@ -169,10 +170,10 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
       try {
         const fileText = readFileSync(id, "utf-8");
         const json = JSON.parse(fileText);
-        worker?.postMessage({ json, cachedBaseLocale, option, id });
+        worker?.postMessage({ json, cachedBaseLocale, option, file: id });
         textlintWorker?.postMessage({
           textlintOption,
-          id,
+          file: id,
         });
 
         checkedFiles.push(id);

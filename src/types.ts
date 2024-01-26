@@ -19,6 +19,5 @@ export type CacheValue = [[string], [Cache]];
 export type Cache = [[string] | [CacheValue]];
 type PromiseType<T extends Promise<any>> =
   T extends Promise<infer P> ? P : never;
-export type TextlintResults = PromiseType<
-  ReturnType<ReturnType<typeof createLinter>["lintFiles"]>
->;
+export type Textlint = ReturnType<typeof createLinter>;
+export type TextlintResults = PromiseType<ReturnType<Textlint["lintFiles"]>>;

@@ -1,26 +1,27 @@
 import { parentPort } from "worker_threads";
-import type { TextlintOption } from "./types";
-import { createLinter } from "textlint";
+import type { Textlint, TextlintOption } from "./types";
 
-let textlint: ReturnType<typeof createLinter> | null = null;
+let lintFilesFn: Textlint["lintFiles"] | null = null;
 
 parentPort?.on(
   "message",
-  async (msg: { textlintOption: TextlintOption; id: string }) => {
-    if (!textlint) {
+  async (msg: { textlintOption: TextlintOption; file: string }) => {
+    const { textlintOption, file } = msg;
+
+    if (!lintFilesFn) {
       const { createLinter, loadTextlintrc } = await import("textlint");
       const descriptor = await loadTextlintrc(
-        msg.textlintOption!.loadTextlintrcOptions
+        textlintOption!.loadTextlintrcOptions
       );
 
-      textlint = createLinter({
-        ...msg.textlintOption!.createLinterOptions,
+      lintFilesFn = createLinter({
+        ...textlintOption!.createLinterOptions,
         descriptor,
-      });
+      }).lintFiles;
     }
 
-    const results = await textlint.lintFiles([msg.id]);
+    const results = await lintFilesFn([file]);
 
-    parentPort?.postMessage({ results, id: msg.id });
+    parentPort?.postMessage({ results, file });
   }
 );
