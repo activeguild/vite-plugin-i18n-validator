@@ -21,7 +21,10 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
     throw new Error("baseLocaleFilePath is required.");
   }
 
-  const traverse = (json: Record<string, any>, parentKey: string): string[] => {
+  const traverse = (
+    json: Record<string, any>,
+    parentKey?: string
+  ): string[] => {
     const keys = Object.keys(json);
     let arr: string[] = [];
 
@@ -61,10 +64,14 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
     enforce: "pre",
 
     configResolved(config) {
+      option.baseLocaleFilePath = path.isAbsolute(option.baseLocaleFilePath)
+        ? option.baseLocaleFilePath
+        : path.resolve(config.root, option.baseLocaleFilePath);
+
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = path.dirname(__filename);
       logger = config.logger;
-      worker = new Worker(`${__dirname}/worker.js`);
+      worker = new Worker(`${path.resolve(__dirname, "worker.js")}`);
       worker.on("message", ({ errors, file }) => {
         if (errors.length > 0) {
           const relativePath = path.relative(config.root, file);
@@ -77,8 +84,8 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
       });
 
       if (option.textlint) {
-        const textlintConfigFilepath = `${config.root}/.textlintrc`;
-        const nodeModulesDir = `${config.root}/node_modules`;
+        const textlintConfigFilepath = path.resolve(config.root, ".textlintrc");
+        const nodeModulesDir = path.resolve(config.root, "node_modules");
 
         if (option.textlint === true) {
           textlintOption = {
@@ -98,7 +105,9 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
           };
         }
 
-        textlintWorker = new Worker(`${__dirname}/textlintWorker.js`);
+        textlintWorker = new Worker(
+          `${path.resolve(__dirname, "textlintWorker.js")}`
+        );
         textlintWorker.on("message", (msg: { results: TextlintResults }) => {
           if (msg.results.length === 0) {
             return;
@@ -122,11 +131,7 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
       }
     },
     async handleHotUpdate(context) {
-      if (!cachedBaseLocale) {
-        return;
-      }
-
-      if (!filter(context.file)) {
+      if (!cachedBaseLocale || !filter(context.file)) {
         return;
       }
 
@@ -136,7 +141,7 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
         const json = JSON.parse(text);
 
         if (context.file === option.baseLocaleFilePath) {
-          cachedBaseLocale = traverse(json, "");
+          cachedBaseLocale = traverse(json);
         }
 
         if (!cachedBaseLocale) {
@@ -165,15 +170,7 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
       textlintWorker?.terminate();
     },
     transform(_code, id) {
-      if (!cachedBaseLocale) {
-        return;
-      }
-
-      if (checkedFiles.includes(id)) {
-        return;
-      }
-
-      if (!filter(id)) {
+      if (!cachedBaseLocale || checkedFiles.includes(id) || !filter(id)) {
         return;
       }
 
