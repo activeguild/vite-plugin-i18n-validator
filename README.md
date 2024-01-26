@@ -6,7 +6,7 @@
 
 # vite-plugin-i18n-validator
 
-A plugin validates Json files with internationalization support.
+A Vite plugin validates Json files with internationalization support in worker thread.
 
 - Compare with the base language file to verify the presence of key and value.
 - _Optional:_ Use [textlint](https://github.com/textlint/textlint) to proofread values.
