@@ -76,8 +76,8 @@ npm run build
 ```
 {
   "plugins": [
-    "json".
-  ],.
+    "json"
+  ]
 }
 ```
 
