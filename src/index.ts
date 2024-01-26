@@ -26,7 +26,7 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
     parentKey?: string
   ): string[] => {
     const keys = Object.keys(json);
-    let arr: string[] = [];
+    const arr: string[] = [];
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
@@ -137,30 +137,26 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
 
       const text = await context.read();
 
-      try {
-        const json = JSON.parse(text);
+      const json = JSON.parse(text);
 
-        if (context.file === option.baseLocaleFilePath) {
-          cachedBaseLocale = traverse(json);
-        }
-
-        if (!cachedBaseLocale) {
-          return;
-        }
-
-        worker?.postMessage({
-          json,
-          cachedBaseLocale,
-          option,
-          file: context.file,
-        });
-        textlintWorker?.postMessage({
-          textlintOption,
-          file: context.file,
-        });
-      } catch (error) {
-        throw error;
+      if (context.file === option.baseLocaleFilePath) {
+        cachedBaseLocale = traverse(json);
       }
+
+      if (!cachedBaseLocale) {
+        return;
+      }
+
+      worker?.postMessage({
+        json,
+        cachedBaseLocale,
+        option,
+        file: context.file,
+      });
+      textlintWorker?.postMessage({
+        textlintOption,
+        file: context.file,
+      });
     },
     buildStart() {
       checkedFiles = [];
@@ -174,19 +170,15 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
         return;
       }
 
-      try {
-        const fileText = readFileSync(id, "utf-8");
-        const json = JSON.parse(fileText);
-        worker?.postMessage({ json, cachedBaseLocale, option, file: id });
-        textlintWorker?.postMessage({
-          textlintOption,
-          file: id,
-        });
+      const fileText = readFileSync(id, "utf-8");
+      const json = JSON.parse(fileText);
+      worker?.postMessage({ json, cachedBaseLocale, option, file: id });
+      textlintWorker?.postMessage({
+        textlintOption,
+        file: id,
+      });
 
-        checkedFiles.push(id);
-      } catch (error) {
-        throw error;
-      }
+      checkedFiles.push(id);
     },
   };
 }

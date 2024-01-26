@@ -18,7 +18,9 @@
     "build": "turbo run tsup",
     "watch": "turbo run tsup -- --watch",
     "local:publish": "turbo run tsup && npm link",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint ./src --fix --ext .js,.jsx,.ts,.tsx"
   },
   "author": "j1ngzoue",
   "license": "MIT",

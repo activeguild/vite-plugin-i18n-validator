@@ -5,7 +5,7 @@ export const compareWithBaseFile = (
   cachedBaseLocale: string[],
   option: Option
 ) => {
-  let errors: string[] = [];
+  const errors: string[] = [];
   for (let i = 0; i < cachedBaseLocale.length; i++) {
     const result = checkNestedProperty(json, cachedBaseLocale[i], option);
     if (result === true) {
@@ -46,6 +46,7 @@ const checkNestedProperty = (
     if (option.prohibitedKeys && option.prohibitedKeys.includes(prop)) {
       return { prohibitedKey: true };
     }
+    // @ts-ignore
     if (!obj.hasOwnProperty(prop)) {
       return { notFound: true };
     } else {
