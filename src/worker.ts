@@ -1,6 +1,6 @@
 import { parentPort } from "worker_threads";
 import { compareWithBaseFile } from "./checker";
-import { Option } from "./index";
+import type { Option } from "./types";
 
 parentPort?.on(
   "message",

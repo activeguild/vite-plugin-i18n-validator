@@ -5,28 +5,14 @@ import pc from "picocolors";
 import { Worker } from "worker_threads";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { CreateLinterOptions, LoadTextlintrcOptions } from "textlint";
-
-export type Option = {
-  baseLocaleFilePath: string;
-  include?: string | RegExp | Array<string | RegExp>;
-  exclude?: string | RegExp | Array<string | RegExp>;
-  prohibitedKeys?: string[];
-  prohibitedValues?: string[];
-  textlint?: {
-    createLinterOptions: Exclude<CreateLinterOptions, "descriptor">;
-    loadTextlintrcOptions: LoadTextlintrcOptions;
-  };
-};
-
-type CacheValue = [[string], [Cache]];
-type Cache = [[string] | [CacheValue]];
+import type { Option, TextlintOption, TextlintResults } from "./types";
 
 export default async function Plugin(option: Option): Promise<VitePlugin> {
   let cachedBaseLocale: string[] | null = null;
   let checkedFiles: string[] = [];
   let worker: Worker | null = null;
   let textlintWorker: Worker | null = null;
+  let textlintOption: TextlintOption | null = null;
 
   const filter = createFilter(option.include, option.exclude);
 
@@ -71,6 +57,7 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
 
   return {
     name: "vite-plugin-i18n-validator",
+    enforce: "pre",
     async handleHotUpdate(context) {
       if (!cachedBaseLocale) {
         return;
@@ -100,30 +87,63 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
           id: context.file,
         });
         textlintWorker?.postMessage({
-          textlintOptions: option.textlint,
+          textlintOption,
           id: context.file,
         });
       } catch (error) {
         console.error("error :>> ", error);
       }
     },
-    configResolved() {
+    configResolved(config) {
+      console.log("config :>> ", config);
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = path.dirname(__filename);
       worker = new Worker(`${__dirname}/worker.js`);
-
       worker.on("message", ({ errors, id }) => {
         if (errors.length > 0) {
-          console.log(pc.yellow(`\n${id}`));
+          const relativePath = path.relative(config.root, id);
+          console.log(pc.yellow(`\n${relativePath}`));
           for (let i = 0; i < errors.length; i++) {
-            console.error(`- ${errors[i]}`);
+            console.error(`${errors[i]}`);
           }
         }
       });
 
       if (option.textlint) {
+        if (option.textlint === true) {
+          textlintOption = {
+            createLinterOptions: {},
+            loadTextlintrcOptions: {
+              configFilePath: `${config.root}/.textlintrc`,
+            },
+          };
+        } else if (!option.textlint.loadTextlintrcOptions.configFilePath) {
+          option.textlint.loadTextlintrcOptions.configFilePath = `${config.root}/.textlintrc`;
+          textlintOption = {
+            ...option.textlint,
+          };
+        }
+
         textlintWorker = new Worker(`${__dirname}/textlintWorker.js`);
-        textlintWorker.on("message", ({ id }) => {});
+        textlintWorker.on("message", (msg: { results: TextlintResults }) => {
+          if (msg.results.length === 0) {
+            return;
+          }
+          for (let i = 0; i < msg.results.length; i++) {
+            const result = msg.results[i];
+            if (result.messages.length === 0) {
+              continue;
+            }
+            const relativePath = path.relative(config.root, result.filePath);
+            console.log(pc.yellow(`\n${relativePath}`));
+            for (let j = 0; j < result.messages.length; j++) {
+              const message = result.messages[j];
+              console.error(
+                `${message.loc.start.line}:${message.loc.start.column}: ${message.message}`
+              );
+            }
+          }
+        });
         return;
       }
     },
@@ -152,9 +172,10 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
         const json = JSON.parse(fileText);
         worker?.postMessage({ json, cachedBaseLocale, option, id });
         textlintWorker?.postMessage({
-          textlintOptions: option.textlint,
+          textlintOption,
           id,
         });
+
         checkedFiles.push(id);
       } catch (error) {
         console.error("error :>> ", error);

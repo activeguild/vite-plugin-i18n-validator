@@ -6,8 +6,10 @@
 
 # vite-plugin-i18n-validator
 
-A plugin validates keys and values in Json files in localization.\
-It can also detect unset keys between specific languages.
+A plugin validates Json files with internationalization support.
+
+- Compare with the base language file to verify the presence of key and value.
+- _Optional:_ Use [textlint](https://github.com/textlint/textlint) to proofread values.
 
 ## Install
 
@@ -24,6 +26,7 @@ npm i -D vite-plugin-i18n-validator
 | exclude            | string \| RegExp \| Array<string \| RegExp> | Set the paths you want to exclude.       |
 | prohibitedKeys     | string[]                                    | Set prohibited keys.                     |
 | prohibitedValues   | string[]                                    | Set prohibited values.                   |
+| textlint           | {CreateLinterOptions,LoadTextlintrcOptions} | https://github.com/textlint/textlint     |
 
 ## Usage
 

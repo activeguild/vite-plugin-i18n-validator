@@ -2,6 +2,8 @@
   "foo": {
     "bar": "bar",
     "zoo": "zoo",
-    "todo": "todo:hoge"
+    "todo": "todo:hoge",
+    "todo2": "to:hoge",
+    "todo3": "todo:hoge"
   }
 }
