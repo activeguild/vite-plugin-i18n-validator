@@ -19,14 +19,14 @@ npm i -D vite-plugin-i18n-validator
 
 ## Options
 
-| Parameter          | Type                                        | Description                              |
-| ------------------ | ------------------------------------------- | ---------------------------------------- |
-| baseLocaleFilePath | string                                      | Set the path of the file to be compared. |
-| include            | string \| RegExp \| Array<string \| RegExp> | Set the target path.                     |
-| exclude            | string \| RegExp \| Array<string \| RegExp> | Set the paths you want to exclude.       |
-| prohibitedKeys     | string[]                                    | Set prohibited keys.                     |
-| prohibitedValues   | string[]                                    | Set prohibited values.                   |
-| textlint           | {CreateLinterOptions,LoadTextlintrcOptions} | https://github.com/textlint/textlint     |
+| Parameter          | Type                                                | Description                              |
+| ------------------ | --------------------------------------------------- | ---------------------------------------- |
+| baseLocaleFilePath | string                                              | Set the path of the file to be compared. |
+| include            | string \| RegExp \| Array<string \| RegExp>         | Set the target path.                     |
+| exclude            | string \| RegExp \| Array<string \| RegExp>         | Set the paths you want to exclude.       |
+| prohibitedKeys     | string[]                                            | Set prohibited keys.                     |
+| prohibitedValues   | string[]                                            | Set prohibited values.                   |
+| textlint           | true \| {CreateLinterOptions,LoadTextlintrcOptions} | https://github.com/textlint/textlint     |
 
 ## Usage
 
@@ -45,6 +45,7 @@ export default defineConfig({
       baseLocaleFilePath: path.resolve(__dirname, "src/locales/ja.json"),
       prohibitedValues: ["public"],
     }),
+    textlint: true
   ],
 });
 ```
