@@ -2,24 +2,24 @@ import { Option } from "./types";
 
 export const compareWithBaseFile = (
   json: any,
-  cachedBaseLocale: string[],
+  cachedBaseFile: string[],
   option: Option
 ) => {
   const errors: string[] = [];
-  for (let i = 0; i < cachedBaseLocale.length; i++) {
-    const result = checkNestedProperty(json, cachedBaseLocale[i], option);
+  for (let i = 0; i < cachedBaseFile.length; i++) {
+    const result = checkNestedProperty(json, cachedBaseFile[i], option);
     if (result === true) {
       continue;
     }
 
     if (result.notFound) {
-      errors.push(`Not found: '${cachedBaseLocale[i]}'`);
+      errors.push(`Not found: '${cachedBaseFile[i]}'`);
     } else if (result.noValue) {
-      errors.push(`No value: '${cachedBaseLocale[i]}'`);
+      errors.push(`No value: '${cachedBaseFile[i]}'`);
     } else if (result.prohibitedKey) {
-      errors.push(`Prohibited key: '${cachedBaseLocale[i]}'`);
+      errors.push(`Prohibited key: '${cachedBaseFile[i]}'`);
     } else if (result.prohibitedValue) {
-      errors.push(`Prohibited value: '${cachedBaseLocale[i]}'`);
+      errors.push(`Prohibited value: '${cachedBaseFile[i]}'`);
     }
   }
 

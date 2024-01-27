@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import type { Option, TextlintOption, TextlintResults } from "./types";
 
 export default async function Plugin(option: Option): Promise<VitePlugin> {
-  let cachedBaseLocale: string[] | null = null;
+  let cachedBaseFile: string[] | null = null;
   let checkedFiles: string[] = [];
   let worker: Worker | null = null;
   let textlintWorker: Worker | null = null;
@@ -54,8 +54,9 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
     const fileText = fs.readFileSync(option.baseLocaleFilePath, "utf-8");
     const json = JSON.parse(fileText);
 
-    cachedBaseLocale = traverse(json, "");
+    cachedBaseFile = traverse(json, "");
   } catch (error) {
+    console.log("error :>> ", error);
     throw new Error("baseLocaleFilePath is invalid.");
   }
 
@@ -131,25 +132,24 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
       }
     },
     async handleHotUpdate(context) {
-      if (!cachedBaseLocale || !filter(context.file)) {
+      if (!cachedBaseFile || !filter(context.file)) {
         return;
       }
 
       const text = await context.read();
-
       const json = JSON.parse(text);
 
       if (context.file === option.baseLocaleFilePath) {
-        cachedBaseLocale = traverse(json);
+        cachedBaseFile = traverse(json);
       }
 
-      if (!cachedBaseLocale) {
+      if (!cachedBaseFile) {
         return;
       }
 
       worker?.postMessage({
         json,
-        cachedBaseLocale,
+        cachedBaseFile,
         option,
         file: context.file,
       });
@@ -166,13 +166,13 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
       textlintWorker?.terminate();
     },
     transform(_code, id) {
-      if (!cachedBaseLocale || checkedFiles.includes(id) || !filter(id)) {
+      if (!cachedBaseFile || checkedFiles.includes(id) || !filter(id)) {
         return;
       }
 
       const fileText = readFileSync(id, "utf-8");
       const json = JSON.parse(fileText);
-      worker?.postMessage({ json, cachedBaseLocale, option, file: id });
+      worker?.postMessage({ json, cachedBaseFile, option, file: id });
       textlintWorker?.postMessage({
         textlintOption,
         file: id,

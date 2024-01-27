@@ -22,6 +22,7 @@ parentPort?.on(
 
     const results = await lintFilesFn([file]);
 
-    parentPort?.postMessage({ results, file });
+    console.log("results :>> ", results);
+    parentPort?.postMessage({ results });
   }
 );

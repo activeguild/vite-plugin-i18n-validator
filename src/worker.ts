@@ -6,13 +6,13 @@ parentPort?.on(
   "message",
   async (msg: {
     json: any;
-    cachedBaseLocale: string[];
+    cachedBaseFile: string[];
     option: Option;
     file: string;
   }) => {
-    const { json, cachedBaseLocale, option, file } = msg;
+    const { json, cachedBaseFile, option, file } = msg;
 
-    const errors = compareWithBaseFile(json, cachedBaseLocale, option);
+    const errors = compareWithBaseFile(json, cachedBaseFile, option);
     parentPort?.postMessage({ errors, file });
   }
 );
