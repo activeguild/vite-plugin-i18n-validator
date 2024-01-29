@@ -5,21 +5,19 @@ import pc from "picocolors";
 import { Worker } from "worker_threads";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { Option, TextlintOption, TextlintResults } from "./types";
+import type { Option, FinalOption, TextlintResults } from "./types";
 
-export default async function Plugin(option: Option): Promise<VitePlugin> {
-  let cachedBaseFile: string[] | null = null;
+export default async function Plugin(
+  options: Option | Option[]
+): Promise<VitePlugin> {
   let checkedFiles: string[] = [];
+
   let worker: Worker | null = null;
   let textlintWorker: Worker | null = null;
-  let textlintOption: TextlintOption | null = null;
   let logger: Logger | null = null;
-
-  const filter = createFilter(option.include, option.exclude);
-
-  if (!option.baseLocaleFilePath) {
-    throw new Error("baseLocaleFilePath is required.");
-  }
+  const finalOptions: FinalOption[] = Array.isArray(options)
+    ? options
+    : [options];
 
   const traverse = (
     json: Record<string, any>,
@@ -50,14 +48,23 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
     return arr;
   };
 
-  try {
-    const fileText = fs.readFileSync(option.baseLocaleFilePath, "utf-8");
-    const json = JSON.parse(fileText);
+  for (let i = 0; i < finalOptions.length; i++) {
+    const finalOption = finalOptions[i];
+    finalOption.filter = createFilter(finalOption.include, finalOption.exclude);
 
-    cachedBaseFile = traverse(json, "");
-  } catch (error) {
-    console.log("error :>> ", error);
-    throw new Error("baseLocaleFilePath is invalid.");
+    if (!finalOption.baseLocaleFilePath) {
+      throw new Error("baseLocaleFilePath is required.");
+    }
+
+    try {
+      const fileText = fs.readFileSync(finalOption.baseLocaleFilePath, "utf-8");
+      const json = JSON.parse(fileText);
+
+      finalOption.cachedBaseFile = traverse(json, "");
+    } catch (error) {
+      console.log("error :>> ", error);
+      throw new Error("baseLocaleFilePath is invalid.");
+    }
   }
 
   return {
@@ -65,10 +72,14 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
     enforce: "pre",
 
     configResolved(config) {
-      option.baseLocaleFilePath = path.isAbsolute(option.baseLocaleFilePath)
-        ? option.baseLocaleFilePath
-        : path.resolve(config.root, option.baseLocaleFilePath);
-
+      for (let i = 0; i < finalOptions.length; i++) {
+        const finalOption = finalOptions[i];
+        finalOption.baseLocaleFilePath = path.isAbsolute(
+          finalOption.baseLocaleFilePath
+        )
+          ? finalOption.baseLocaleFilePath
+          : path.resolve(config.root, finalOption.baseLocaleFilePath);
+      }
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = path.dirname(__filename);
       logger = config.logger;
@@ -84,26 +95,34 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
         }
       });
 
-      if (option.textlint) {
-        const textlintConfigFilepath = path.resolve(config.root, ".textlintrc");
-        const nodeModulesDir = path.resolve(config.root, "node_modules");
+      for (let i = 0; i < finalOptions.length; i++) {
+        const finalOption = finalOptions[i];
+        if (finalOption.textlint) {
+          const textlintConfigFilepath = path.resolve(
+            config.root,
+            ".textlintrc"
+          );
+          const nodeModulesDir = path.resolve(config.root, "node_modules");
 
-        if (option.textlint === true) {
-          textlintOption = {
-            createLinterOptions: {},
-            loadTextlintrcOptions: {
-              configFilePath: textlintConfigFilepath,
-              node_modulesDir: nodeModulesDir,
-            },
-          };
-        } else if (!option.textlint.loadTextlintrcOptions.configFilePath) {
-          option.textlint.loadTextlintrcOptions.configFilePath =
-            textlintConfigFilepath;
-          option.textlint.loadTextlintrcOptions.node_modulesDir =
-            nodeModulesDir;
-          textlintOption = {
-            ...option.textlint,
-          };
+          if (finalOption.textlint === true) {
+            finalOption.textlintOption = {
+              createLinterOptions: {},
+              loadTextlintrcOptions: {
+                configFilePath: textlintConfigFilepath,
+                node_modulesDir: nodeModulesDir,
+              },
+            };
+          } else if (
+            !finalOption.textlint.loadTextlintrcOptions.configFilePath
+          ) {
+            finalOption.textlint.loadTextlintrcOptions.configFilePath =
+              textlintConfigFilepath;
+            finalOption.textlint.loadTextlintrcOptions.node_modulesDir =
+              nodeModulesDir;
+            finalOption.textlintOption = {
+              ...finalOption.textlint,
+            };
+          }
         }
 
         textlintWorker = new Worker(
@@ -132,31 +151,39 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
       }
     },
     async handleHotUpdate(context) {
-      if (!cachedBaseFile || !filter(context.file)) {
-        return;
-      }
-
       const text = await context.read();
       const json = JSON.parse(text);
 
-      if (context.file === option.baseLocaleFilePath) {
-        cachedBaseFile = traverse(json);
-      }
+      for (let i = 0; i < finalOptions.length; i++) {
+        const finalOption = finalOptions[i];
+        if (!finalOption.cachedBaseFile) {
+          return;
+        }
 
-      if (!cachedBaseFile) {
-        return;
-      }
+        if (!finalOption.filter!(context.file)) {
+          continue;
+        }
 
-      worker?.postMessage({
-        json,
-        cachedBaseFile,
-        option,
-        file: context.file,
-      });
-      textlintWorker?.postMessage({
-        textlintOption,
-        file: context.file,
-      });
+        if (context.file === finalOption.baseLocaleFilePath) {
+          finalOption.cachedBaseFile = traverse(json);
+        }
+
+        try {
+          worker?.postMessage({
+            json,
+            cachedBaseFile: finalOption.cachedBaseFile,
+            prohibitedValues: finalOption.prohibitedValues,
+            prohibitedKey: finalOption.prohibitedKeys,
+            file: context.file,
+          });
+          textlintWorker?.postMessage({
+            textlintOption: finalOption.textlintOption,
+            file: context.file,
+          });
+        } catch (error) {
+          console.log("error :>> ", error);
+        }
+      }
     },
     buildStart() {
       checkedFiles = [];
@@ -166,18 +193,32 @@ export default async function Plugin(option: Option): Promise<VitePlugin> {
       textlintWorker?.terminate();
     },
     transform(_code, id) {
-      if (!cachedBaseFile || checkedFiles.includes(id) || !filter(id)) {
+      if (checkedFiles.includes(id)) {
         return;
       }
 
-      const fileText = readFileSync(id, "utf-8");
-      const json = JSON.parse(fileText);
-      worker?.postMessage({ json, cachedBaseFile, option, file: id });
-      textlintWorker?.postMessage({
-        textlintOption,
-        file: id,
-      });
+      for (let i = 0; i < finalOptions.length; i++) {
+        const finalOption = finalOptions[i];
+        if (!finalOption.cachedBaseFile) {
+          continue;
+        }
+        if (!finalOption.filter!(id)) {
+          continue;
+        }
 
+        const fileText = readFileSync(id, "utf-8");
+        const json = JSON.parse(fileText);
+        worker?.postMessage({
+          json,
+          cachedBaseFile: finalOption.cachedBaseFile,
+          option: finalOption,
+          file: id,
+        });
+        textlintWorker?.postMessage({
+          textlintOption: finalOption.textlintOption,
+          file: id,
+        });
+      }
       checkedFiles.push(id);
     },
   };

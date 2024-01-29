@@ -1,18 +1,24 @@
 import { parentPort } from "worker_threads";
 import { compareWithBaseFile } from "./checker";
-import type { Option } from "./types";
 
 parentPort?.on(
   "message",
-  async (msg: {
+  (msg: {
     json: any;
     cachedBaseFile: string[];
-    option: Option;
+    prohibitedValues?: string[];
+    prohibitedKeys?: string[];
     file: string;
   }) => {
-    const { json, cachedBaseFile, option, file } = msg;
+    const { json, cachedBaseFile, prohibitedValues, prohibitedKeys, file } =
+      msg;
 
-    const errors = compareWithBaseFile(json, cachedBaseFile, option);
+    const errors = compareWithBaseFile(
+      json,
+      cachedBaseFile,
+      prohibitedKeys,
+      prohibitedValues
+    );
     parentPort?.postMessage({ errors, file });
   }
 );

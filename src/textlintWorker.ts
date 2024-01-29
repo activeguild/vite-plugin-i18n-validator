@@ -1,14 +1,19 @@
 import { parentPort } from "worker_threads";
 import type { Textlint, TextlintOption } from "./types";
 
-let lintFilesFn: Textlint["lintFiles"] | null = null;
+const lintFilesFnHash: Map<number, Textlint["lintFiles"]> = new Map();
 
 parentPort?.on(
   "message",
-  async (msg: { textlintOption: TextlintOption; file: string }) => {
+  async (msg: {
+    index: number;
+    textlintOption: TextlintOption;
+    file: string;
+  }) => {
     const { textlintOption, file } = msg;
 
-    if (!lintFilesFn) {
+    let lintFilesFn = lintFilesFnHash.get(msg.index);
+    if (!lintFilesFnHash.has(msg.index)) {
       const { createLinter, loadTextlintrc } = await import("textlint");
       const descriptor = await loadTextlintrc(
         textlintOption!.loadTextlintrcOptions
@@ -18,11 +23,12 @@ parentPort?.on(
         ...textlintOption!.createLinterOptions,
         descriptor,
       }).lintFiles;
+
+      lintFilesFnHash.set(msg.index, lintFilesFn);
     }
 
-    const results = await lintFilesFn([file]);
+    const results = await lintFilesFn!([file]);
 
-    console.log("results :>> ", results);
     parentPort?.postMessage({ results });
   }
 );

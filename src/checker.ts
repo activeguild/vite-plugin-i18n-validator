@@ -1,13 +1,17 @@
-import { Option } from "./types";
-
 export const compareWithBaseFile = (
   json: any,
   cachedBaseFile: string[],
-  option: Option
+  prohibitedKeys?: string[],
+  prohibitedValues?: string[]
 ) => {
   const errors: string[] = [];
   for (let i = 0; i < cachedBaseFile.length; i++) {
-    const result = checkNestedProperty(json, cachedBaseFile[i], option);
+    const result = checkNestedProperty(
+      json,
+      cachedBaseFile[i],
+      prohibitedKeys,
+      prohibitedValues
+    );
     if (result === true) {
       continue;
     }
@@ -29,7 +33,8 @@ export const compareWithBaseFile = (
 const checkNestedProperty = (
   obj: any,
   propertyPath: string,
-  option: Option
+  prohibitedKeys?: string[],
+  prohibitedValues?: string[]
 ):
   | {
       notFound?: boolean;
@@ -43,7 +48,7 @@ const checkNestedProperty = (
   for (let i = 0; i < properties.length; i++) {
     const prop = properties[i];
 
-    if (option.prohibitedKeys && option.prohibitedKeys.includes(prop)) {
+    if (prohibitedKeys && prohibitedKeys.includes(prop)) {
       return { prohibitedKey: true };
     }
     // @ts-ignore
@@ -53,9 +58,9 @@ const checkNestedProperty = (
       obj = obj[prop];
       if (!obj) {
         return { noValue: true };
-      } else if (typeof obj === "string" && option.prohibitedValues) {
-        for (let j = 0; j < option.prohibitedValues.length; j++) {
-          if (obj.includes(option.prohibitedValues[j])) {
+      } else if (typeof obj === "string" && prohibitedValues) {
+        for (let j = 0; j < prohibitedValues.length; j++) {
+          if (obj.includes(prohibitedValues[j])) {
             return { prohibitedValue: true };
           }
         }
