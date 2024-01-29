@@ -206,12 +206,12 @@ export default async function Plugin(
           continue;
         }
 
-        const fileText = readFileSync(id, "utf-8");
-        const json = JSON.parse(fileText);
+        const json = JSON.parse(_code);
         worker?.postMessage({
           json,
           cachedBaseFile: finalOption.cachedBaseFile,
-          option: finalOption,
+          prohibitedValues: finalOption.prohibitedValues,
+          prohibitedKey: finalOption.prohibitedKeys,
           file: id,
         });
         textlintWorker?.postMessage({
