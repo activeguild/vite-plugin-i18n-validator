@@ -1,6 +1,6 @@
 import { Logger, createFilter } from "vite";
 import { Plugin as VitePlugin } from "vite";
-import fs, { readFileSync } from "node:fs";
+import fs from "node:fs";
 import pc from "picocolors";
 import { Worker } from "worker_threads";
 import path from "node:path";
