@@ -9,6 +9,12 @@ A Vite plugin validates Json files with internationalization support in worker t
 - Compare with the base language file to verify the presence of key and value.
 - _Optional:_ Use [textlint](https://github.com/textlint/textlint) to proofread values.
 
+## Motivation
+
+- We want to reduce obstacles caused by forgotten key settings by supporting multiple languages.
+- We want to reduce obstacles such as shaky notation.
+- I want to use correct grammar to provide easier-to-understand text to users.
+
 ## Install
 
 ```bash
