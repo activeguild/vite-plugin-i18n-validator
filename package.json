@@ -62,9 +62,9 @@
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
   },
-  "peerDependencies": {
+  "peerDevDependencies": {
     "textlint": "*",
-    "vite": ">=4"
+    "vite": "<=4"
   },
   "peerDependenciesMeta": {
     "textlint": {
