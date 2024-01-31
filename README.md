@@ -79,15 +79,7 @@ npm run build
 2:05:49 [vite] src/locales/en.json: Not found: 'foo.todo3'
 ```
 
-- If you want to use `textlint`, you need to add `textlint` and `textlint-plugin-json` and add the following settings to `.textlintrc`.
-
-```
-{
-  "plugins": [
-    "json"
-  ]
-}
-```
+- If proofreading is required, install the `textlint` library.
 
 ## Principles of conduct
 

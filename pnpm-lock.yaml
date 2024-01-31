@@ -9,7 +9,7 @@ dependencies:
     specifier: ^1.0.0
     version: 1.0.0
   textlint-plugin-json:
-    specifier: '*'
+    specifier: ^0.0.1
     version: 0.0.1
 
 devDependencies:

@@ -15,7 +15,7 @@
   },
   "scripts": {
     "tsup": "tsup-node",
-    "build": "turbo run tsup",
+    "build": "turbo run tsup && cp ./.base_textlintrc ./dist/.base_textlintrc",
     "watch": "turbo run tsup -- --watch",
     "local:publish": "turbo run tsup && npm link",
     "prepare": "husky install",
@@ -29,7 +29,8 @@
   },
   "homepage": "https://github.com/activeguild/vite-plugin-i18n-validator#readme",
   "dependencies": {
-    "picocolors": "^1.0.0"
+    "picocolors": "^1.0.0",
+    "textlint-plugin-json": "^0.0.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.7",
@@ -63,14 +64,10 @@
   },
   "peerDependencies": {
     "textlint": "*",
-    "textlint-plugin-json": "*",
     "vite": ">=4"
   },
   "peerDependenciesMeta": {
     "textlint": {
-      "optional": true
-    },
-    "textlint-plugin-json": {
       "optional": true
     }
   }

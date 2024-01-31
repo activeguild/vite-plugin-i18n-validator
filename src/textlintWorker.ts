@@ -18,10 +18,14 @@ parentPort?.on(
       const descriptor = await loadTextlintrc(
         textlintOption!.loadTextlintrcOptions
       );
+      const baseDescriptor = await loadTextlintrc({
+        configFilePath: textlintOption.baseConfigFilePath,
+      });
 
+      const finalDescriptor = descriptor.concat(baseDescriptor);
       lintFilesFn = createLinter({
         ...textlintOption!.createLinterOptions,
-        descriptor,
+        descriptor: finalDescriptor,
       }).lintFiles;
 
       lintFilesFnHash.set(msg.index, lintFilesFn);

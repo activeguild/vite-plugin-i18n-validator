@@ -102,10 +102,15 @@ export default async function Plugin(
             config.root,
             ".textlintrc"
           );
+          const baseConfigFilePath = path.resolve(
+            __dirname,
+            ".base_textlintrc"
+          );
           const nodeModulesDir = path.resolve(config.root, "node_modules");
 
           if (finalOption.textlint === true) {
             finalOption.textlintOption = {
+              baseConfigFilePath,
               createLinterOptions: {},
               loadTextlintrcOptions: {
                 configFilePath: textlintConfigFilepath,
@@ -119,6 +124,7 @@ export default async function Plugin(
               textlintConfigFilepath;
             finalOption.textlint.loadTextlintrcOptions.node_modulesDir =
               nodeModulesDir;
+            finalOption.textlint.baseConfigFilePath = baseConfigFilePath;
             finalOption.textlintOption = {
               ...finalOption.textlint,
             };

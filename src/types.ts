@@ -25,6 +25,7 @@ export type FinalOption = {
 };
 
 export type TextlintOption = {
+  baseConfigFilePath: string;
   createLinterOptions: Omit<CreateLinterOptions, "descriptor">;
   loadTextlintrcOptions: LoadTextlintrcOptions;
 };
