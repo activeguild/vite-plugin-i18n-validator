@@ -12,6 +12,7 @@ export default defineConfig({
       baseLocaleFilePath: path.resolve(__dirname, "src/locales/ja.json"),
       prohibitedValues: ["public"],
       textlint: true,
+      ignoreKeys: /(foo\.todo)+/i,
     }),
   ],
 });

@@ -30,6 +30,7 @@ npm i -D vite-plugin-i18n-validator
 | baseLocaleFilePath | string                                              | Set the path of the file to be compared. |
 | include            | string \| RegExp \| Array<string \| RegExp>         | Set the target path.                     |
 | exclude            | string \| RegExp \| Array<string \| RegExp>         | Set the paths you want to exclude.       |
+| ignoreKeys         | RegExp \| Array<RegExp>                             | Set key not to validate.                 |
 | prohibitedKeys     | string[]                                            | Set prohibited keys.                     |
 | prohibitedValues   | string[]                                            | Set prohibited values.                   |
 | textlint           | true \| {CreateLinterOptions,LoadTextlintrcOptions} | https://github.com/textlint/textlint     |

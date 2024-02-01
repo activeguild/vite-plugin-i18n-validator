@@ -49,7 +49,6 @@ export default async function Plugin(
   for (let i = 0; i < finalOptions.length; i++) {
     const finalOption = finalOptions[i];
     finalOption.filter = createFilter(finalOption.include, finalOption.exclude);
-    finalOption.ignoreKeysFilter = createFilter(null, finalOption.ignoreKeys);
 
     if (!finalOption.baseLocaleFilePath) {
       throw new Error("baseLocaleFilePath is required.");
@@ -180,6 +179,7 @@ export default async function Plugin(
             prohibitedValues: finalOption.prohibitedValues,
             prohibitedKey: finalOption.prohibitedKeys,
             file: context.file,
+            ignoreKeys: finalOption.ignoreKeys,
           });
           textlintWorker?.postMessage({
             textlintOption: finalOption.textlintOption,
@@ -218,6 +218,7 @@ export default async function Plugin(
           prohibitedValues: finalOption.prohibitedValues,
           prohibitedKey: finalOption.prohibitedKeys,
           file: id,
+          ignoreKeys: finalOption.ignoreKeys,
         });
         textlintWorker?.postMessage({
           textlintOption: finalOption.textlintOption,

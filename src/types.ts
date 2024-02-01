@@ -14,7 +14,6 @@ export type Option = {
 export type FinalOption = Option & {
   cachedBaseFile?: string[];
   filter?: (id: unknown) => boolean;
-  ignoreKeysFilter?: (id: unknown) => boolean;
   textlintOption?: TextlintOption;
 };
 

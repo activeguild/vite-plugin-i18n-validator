@@ -1,5 +1,6 @@
 import { parentPort } from "worker_threads";
 import { compareWithBaseFile } from "./checker";
+import { createFilter } from "vite";
 
 parentPort?.on(
   "message",
@@ -8,7 +9,7 @@ parentPort?.on(
     cachedBaseFile: string[];
     prohibitedValues?: string[];
     prohibitedKeys?: string[];
-    ignoreKeysFilter?: (id: unknown) => boolean;
+    ignoreKeys?: RegExp | RegExp[];
     file: string;
   }) => {
     const {
@@ -17,8 +18,9 @@ parentPort?.on(
       prohibitedValues,
       prohibitedKeys,
       file,
-      ignoreKeysFilter,
+      ignoreKeys,
     } = msg;
+    const ignoreKeysFilter = createFilter(ignoreKeys);
 
     const errors = compareWithBaseFile(
       json,
