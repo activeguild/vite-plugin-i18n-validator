@@ -7,18 +7,11 @@ export type Option = {
   exclude?: string | RegExp | Array<string | RegExp>;
   prohibitedKeys?: string[];
   prohibitedValues?: string[];
-  ignoreKeys?: string[];
+  ignoreKeys?: RegExp | RegExp[];
   textlint?: true | TextlintOption;
 };
 
-export type FinalOption = {
-  baseLocaleFilePath: string;
-  include?: string | RegExp | Array<string | RegExp>;
-  exclude?: string | RegExp | Array<string | RegExp>;
-  prohibitedKeys?: string[];
-  prohibitedValues?: string[];
-  ignoreKeys?: string[];
-  textlint?: true | TextlintOption;
+export type FinalOption = Option & {
   cachedBaseFile?: string[];
   filter?: (id: unknown) => boolean;
   textlintOption?: TextlintOption;

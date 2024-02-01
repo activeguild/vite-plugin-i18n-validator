@@ -1,5 +1,4 @@
-import { Logger, createFilter } from "vite";
-import { Plugin as VitePlugin } from "vite";
+import { Logger, createFilter, Plugin as VitePlugin } from "vite";
 import fs from "node:fs";
 import pc from "picocolors";
 import { Worker } from "worker_threads";
@@ -11,7 +10,6 @@ export default async function Plugin(
   options: Option | Option[]
 ): Promise<VitePlugin> {
   let checkedFiles: string[] = [];
-
   let worker: Worker | null = null;
   let textlintWorker: Worker | null = null;
   let logger: Logger | null = null;
