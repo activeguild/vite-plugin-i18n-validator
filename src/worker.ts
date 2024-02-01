@@ -8,16 +8,24 @@ parentPort?.on(
     cachedBaseFile: string[];
     prohibitedValues?: string[];
     prohibitedKeys?: string[];
+    ignoreKeysFilter?: (id: unknown) => boolean;
     file: string;
   }) => {
-    const { json, cachedBaseFile, prohibitedValues, prohibitedKeys, file } =
-      msg;
+    const {
+      json,
+      cachedBaseFile,
+      prohibitedValues,
+      prohibitedKeys,
+      file,
+      ignoreKeysFilter,
+    } = msg;
 
     const errors = compareWithBaseFile(
       json,
       cachedBaseFile,
       prohibitedKeys,
-      prohibitedValues
+      prohibitedValues,
+      ignoreKeysFilter
     );
     parentPort?.postMessage({ errors, file });
   }

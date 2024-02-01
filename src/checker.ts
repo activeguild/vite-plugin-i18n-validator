@@ -2,7 +2,8 @@ export const compareWithBaseFile = (
   json: any,
   cachedBaseFile: string[],
   prohibitedKeys?: string[],
-  prohibitedValues?: string[]
+  prohibitedValues?: string[],
+  ignoreKeysFilter?: (id: unknown) => boolean
 ) => {
   const errors: string[] = [];
   for (let i = 0; i < cachedBaseFile.length; i++) {
@@ -10,7 +11,8 @@ export const compareWithBaseFile = (
       json,
       cachedBaseFile[i],
       prohibitedKeys,
-      prohibitedValues
+      prohibitedValues,
+      ignoreKeysFilter
     );
     if (result === true) {
       continue;
@@ -34,7 +36,8 @@ const checkNestedProperty = (
   obj: any,
   propertyPath: string,
   prohibitedKeys?: string[],
-  prohibitedValues?: string[]
+  prohibitedValues?: string[],
+  ignoreKeysFilter?: (id: unknown) => boolean
 ):
   | {
       notFound?: boolean;
@@ -43,6 +46,9 @@ const checkNestedProperty = (
       prohibitedValue?: boolean;
     }
   | true => {
+  if (ignoreKeysFilter && ignoreKeysFilter(propertyPath)) {
+    return true;
+  }
   const properties = propertyPath.split(".");
 
   for (let i = 0; i < properties.length; i++) {
