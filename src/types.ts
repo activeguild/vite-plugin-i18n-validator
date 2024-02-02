@@ -2,6 +2,7 @@ import type { CreateLinterOptions, LoadTextlintrcOptions } from "textlint";
 import { createLinter } from "textlint";
 
 export type Option = {
+  enabledBuild?: boolean;
   baseLocaleFilePath: string;
   include?: string | RegExp | Array<string | RegExp>;
   exclude?: string | RegExp | Array<string | RegExp>;

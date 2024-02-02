@@ -48,6 +48,7 @@ export default async function Plugin(
 
   for (let i = 0; i < finalOptions.length; i++) {
     const finalOption = finalOptions[i];
+    finalOption.enabledBuild = finalOption.enabledBuild || false;
     finalOption.filter = createFilter(finalOption.include, finalOption.exclude);
 
     if (!finalOption.baseLocaleFilePath) {
@@ -207,8 +208,14 @@ export default async function Plugin(
         return;
       }
 
+      checkedFiles.push(id);
+
       for (let i = 0; i < finalOptions.length; i++) {
         const finalOption = finalOptions[i];
+        if (finalOption.enabledBuild === false) {
+          continue;
+        }
+
         if (!finalOption.cachedBaseFile) {
           continue;
         }

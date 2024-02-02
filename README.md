@@ -25,15 +25,16 @@ npm i -D vite-plugin-i18n-validator
 
 - You can set an object or an array.
 
-| Parameter          | Type                                                | Description                              |
-| ------------------ | --------------------------------------------------- | ---------------------------------------- |
-| baseLocaleFilePath | string                                              | Set the path of the file to be compared. |
-| include            | string \| RegExp \| Array<string \| RegExp>         | Set the target path.                     |
-| exclude            | string \| RegExp \| Array<string \| RegExp>         | Set the paths you want to exclude.       |
-| ignoreKeys         | RegExp \| Array<RegExp>                             | Set key not to validate.                 |
-| prohibitedKeys     | string[]                                            | Set prohibited keys.                     |
-| prohibitedValues   | string[]                                            | Set prohibited values.                   |
-| textlint           | true \| {CreateLinterOptions,LoadTextlintrcOptions} | https://github.com/textlint/textlint     |
+| Parameter          | Type                                                | Description                                   |
+| ------------------ | --------------------------------------------------- | --------------------------------------------- |
+| enabledBuild       | boolean                                             | Enable checks at build time. (default: false) |
+| baseLocaleFilePath | string                                              | Set the path of the file to be compared.      |
+| include            | string \| RegExp \| Array<string \| RegExp>         | Set the target path.                          |
+| exclude            | string \| RegExp \| Array<string \| RegExp>         | Set the paths you want to exclude.            |
+| ignoreKeys         | RegExp \| Array<RegExp>                             | Set key not to validate.                      |
+| prohibitedKeys     | string[]                                            | Set prohibited keys.                          |
+| prohibitedValues   | string[]                                            | Set prohibited values.                        |
+| textlint           | true \| {CreateLinterOptions,LoadTextlintrcOptions} | https://github.com/textlint/textlint          |
 
 ## Usage
 
@@ -47,12 +48,20 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    i18nValidator({
-      include: ["src/locales/*.json"],
-      baseLocaleFilePath: path.resolve(__dirname, "src/locales/ja.json"),
-      prohibitedValues: ["public"],
-    }),
-    textlint: true
+    i18nValidator([
+      {
+        enabledBuild: true,
+        include: ["src/locales/*.json"],
+        baseLocaleFilePath: path.resolve(__dirname, "src/locales/ja.json"),
+        prohibitedValues: ["public"],
+        textlint: true,
+      },
+      {
+        include: ["src/locales2/*.json"],
+        baseLocaleFilePath: path.resolve(__dirname, "src/locales/ja.json"),
+        ignoreKeys: /(foo\.todo2)+/i,
+      },
+    ]),
   ],
 });
 ```

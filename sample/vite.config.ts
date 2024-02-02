@@ -7,16 +7,19 @@ import path from "path";
 export default defineConfig({
   plugins: [
     react(),
-    i18nValidator({
-      include: ["src/locales/*.json"],
-      baseLocaleFilePath: path.resolve(__dirname, "src/locales/ja.json"),
-      prohibitedValues: ["public"],
-      textlint: true,
-    }),
-    i18nValidator({
-      include: ["src/locales2/*.json"],
-      baseLocaleFilePath: path.resolve(__dirname, "src/locales/ja.json"),
-      ignoreKeys: /(foo\.todo2)+/i,
-    }),
+    i18nValidator([
+      {
+        enabledBuild: true,
+        include: ["src/locales/*.json"],
+        baseLocaleFilePath: path.resolve(__dirname, "src/locales/ja.json"),
+        prohibitedValues: ["public"],
+        textlint: true,
+      },
+      {
+        include: ["src/locales2/*.json"],
+        baseLocaleFilePath: path.resolve(__dirname, "src/locales/ja.json"),
+        ignoreKeys: /(foo\.todo2)+/i,
+      },
+    ]),
   ],
 });
