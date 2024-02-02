@@ -9,3 +9,4 @@ tsup.config.ts
 turbo.json
 .turbo
 .eslintrc.cjs
+/.base_textlintrc
