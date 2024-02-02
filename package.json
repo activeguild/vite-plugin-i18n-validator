@@ -60,7 +60,8 @@
     "textlint"
   ],
   "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
+    "*.{ts, tsx}": "eslint --fix",
+    "*": "prettier --write"
   },
   "peerDevDependencies": {
     "textlint": "*",
