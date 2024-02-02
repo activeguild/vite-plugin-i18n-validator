@@ -1,14 +1,16 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import ja from './locales/ja.json'
-import en from './locales/en.json'
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
+import ja from "./locales/ja.json";
+import ja2 from "./locales2/ja.json";
+import en from "./locales/en.json";
 
 function App() {
-  const [count, setCount] = useState(0)
-  console.log('ja :>> ', ja)
-  console.log('en :>> ', en)
+  const [count, setCount] = useState(0);
+  console.log("ja :>> ", ja);
+  console.log("en :>> ", en);
+  console.log("ja2 :>> ", ja2);
   return (
     <>
       <div>
@@ -32,7 +34,7 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

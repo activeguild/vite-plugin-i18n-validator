@@ -181,6 +181,11 @@ export default async function Plugin(
             file: context.file,
             ignoreKeys: finalOption.ignoreKeys,
           });
+
+          if (!finalOption.textlint) {
+            return;
+          }
+
           textlintWorker?.postMessage({
             textlintOption: finalOption.textlintOption,
             file: context.file,
@@ -220,6 +225,11 @@ export default async function Plugin(
           file: id,
           ignoreKeys: finalOption.ignoreKeys,
         });
+
+        if (!finalOption.textlint) {
+          return;
+        }
+
         textlintWorker?.postMessage({
           textlintOption: finalOption.textlintOption,
           file: id,

@@ -12,7 +12,11 @@ export default defineConfig({
       baseLocaleFilePath: path.resolve(__dirname, "src/locales/ja.json"),
       prohibitedValues: ["public"],
       textlint: true,
-      ignoreKeys: /(foo\.todo)+/i,
+    }),
+    i18nValidator({
+      include: ["src/locales2/*.json"],
+      baseLocaleFilePath: path.resolve(__dirname, "src/locales/ja.json"),
+      ignoreKeys: /(foo\.todo2)+/i,
     }),
   ],
 });
