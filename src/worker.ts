@@ -27,7 +27,8 @@ parentPort?.on(
       cachedBaseFile,
       prohibitedKeys,
       prohibitedValues,
-      ignoreKeysFilter
+      ignoreKeysFilter,
+      ignoreKeys
     );
     parentPort?.postMessage({ errors, file });
   }

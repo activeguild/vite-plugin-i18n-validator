@@ -3,7 +3,8 @@ export const compareWithBaseFile = (
   cachedBaseFile: string[],
   prohibitedKeys?: string[],
   prohibitedValues?: string[],
-  ignoreKeysFilter?: (id: unknown) => boolean
+  ignoreKeysFilter?: (id: unknown) => boolean,
+  ignoreKeys: RegExp | RegExp[] | undefined
 ) => {
   const errors: string[] = [];
   for (let i = 0; i < cachedBaseFile.length; i++) {
@@ -12,7 +13,8 @@ export const compareWithBaseFile = (
       cachedBaseFile[i],
       prohibitedKeys,
       prohibitedValues,
-      ignoreKeysFilter
+      ignoreKeysFilter,
+      ignoreKeys
     );
     if (result === true) {
       continue;
@@ -37,7 +39,8 @@ const checkNestedProperty = (
   propertyPath: string,
   prohibitedKeys?: string[],
   prohibitedValues?: string[],
-  ignoreKeysFilter?: (id: unknown) => boolean
+  ignoreKeysFilter?: (id: unknown) => boolean,
+  ignoreKeys?: RegExp | RegExp[] | undefined
 ):
   | {
       notFound?: boolean;
@@ -46,7 +49,7 @@ const checkNestedProperty = (
       prohibitedValue?: boolean;
     }
   | true => {
-  if (ignoreKeysFilter && ignoreKeysFilter(propertyPath)) {
+  if (ignoreKeys && ignoreKeysFilter && ignoreKeysFilter(propertyPath)) {
     return true;
   }
   const properties = propertyPath.split(".");
