@@ -167,9 +167,12 @@ export default async function Plugin(
           continue;
         }
 
-        if (context.file === finalOption.baseLocaleFilePath) {
+        if (!json) {
           const text = await context.read();
           json = JSON.parse(text);
+        }
+
+        if (context.file === finalOption.baseLocaleFilePath) {
           finalOption.cachedBaseFile = traverse(json);
         }
 
