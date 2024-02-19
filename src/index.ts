@@ -156,9 +156,7 @@ export default async function Plugin(
       }
     },
     async handleHotUpdate(context) {
-      const text = await context.read();
-      const json = JSON.parse(text);
-
+      let json: any = null;
       for (let i = 0; i < finalOptions.length; i++) {
         const finalOption = finalOptions[i];
         if (!finalOption.cachedBaseFile) {
@@ -170,6 +168,8 @@ export default async function Plugin(
         }
 
         if (context.file === finalOption.baseLocaleFilePath) {
+          const text = await context.read();
+          json = JSON.parse(text);
           finalOption.cachedBaseFile = traverse(json);
         }
 

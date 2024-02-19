@@ -4,7 +4,7 @@ export const compareWithBaseFile = (
   prohibitedKeys?: string[],
   prohibitedValues?: string[],
   ignoreKeysFilter?: (id: unknown) => boolean,
-  ignoreKeys: RegExp | RegExp[] | undefined
+  ignoreKeys?: RegExp | RegExp[] | undefined
 ) => {
   const errors: string[] = [];
   for (let i = 0; i < cachedBaseFile.length; i++) {
