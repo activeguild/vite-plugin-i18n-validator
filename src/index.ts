@@ -163,7 +163,10 @@ export default async function Plugin(
           return;
         }
 
-        if (!finalOption.filter!(context.file)) {
+        if (
+          !finalOption.filter!(context.file) &&
+          context.file !== finalOption.baseLocaleFilePath
+        ) {
           continue;
         }
 
